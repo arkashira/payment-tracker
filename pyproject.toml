@@ -1,14 +1,11 @@
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
 [tool.poetry]
 name = "payment-tracker"
 version = "0.1.0"
-description = ""
+description = "Real-time payment transaction tracking system"
+authors = ["Axentx OS <contact@axentx.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "^7.4.0"

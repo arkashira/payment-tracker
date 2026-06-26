@@ -1,34 +1,44 @@
-import json
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Dict, List
+from enum import Enum
+from typing import List, Optional, Dict
+
+class TransactionStatus(Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 @dataclass
-class TransactionEvent:
-    id: str
-    timestamp: datetime
+class Transaction:
+    transaction_id: str
+    sender: str
+    recipient: str
     amount: float
-    source: str
+    status: TransactionStatus
 
-class PaymentTracker:
+class TransactionTracker:
     def __init__(self):
-        self.transactions = {}
-        self.last_update = datetime.now()
+        self._transactions: List[Transaction] = []
+        self._next_id = 1
 
-    def ingest_event(self, event: Dict) -> None:
-        transaction_id = event['id']
-        if transaction_id in self.transactions:
-            return  # Duplicate event detected and discarded
-        self.transactions[transaction_id] = TransactionEvent(
-            id=transaction_id,
-            timestamp=datetime.strptime(event['timestamp'], '%Y-%m-%d %H:%M:%S'),
-            amount=event['amount'],
-            source=event['source']
+    def add_transaction(self, sender: str, recipient: str, amount: float) -> Transaction:
+        transaction_id = f"TXN-{self._next_id}"
+        self._next_id += 1
+        transaction = Transaction(
+            transaction_id=transaction_id,
+            sender=sender,
+            recipient=recipient,
+            amount=amount,
+            status=TransactionStatus.PENDING
         )
-        self.last_update = datetime.now()
+        self._transactions.append(transaction)
+        return transaction
 
-    def get_transactions(self) -> List[TransactionEvent]:
-        return list(self.transactions.values())
+    def update_status(self, transaction_id: str, new_status: TransactionStatus) -> Transaction:
+        for transaction in self._transactions:
+            if transaction.transaction_id == transaction_id:
+                transaction.status = new_status
+                return transaction
+        raise ValueError(f"Transaction {transaction_id} not found")
 
-    def is_duplicate(self, event: Dict) -> bool:
-        return event['id'] in self.transactions
+    def get_all_transactions(self) -> List[Transaction]:
+        return self._transactions.copy()

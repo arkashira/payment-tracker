@@ -1,2 +1,9 @@
 # Payment Tracker
-A simple payment tracker that ingests transaction events from Stripe and PayPal.
+
+Real-time transaction visibility system for financial services.
+
+## Requirements
+
+- Python 3.10+
+
+## Installation
